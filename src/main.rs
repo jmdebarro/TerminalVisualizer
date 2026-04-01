@@ -1,19 +1,42 @@
 use viuer::{print_from_file, Config};
+use std::{thread, time::Duration};
+use std::{fs, io};
 
 // Take screenshots from video and downplay frames into pixel art
 // Continuously show these low res images
+// Remove audio via this
+// ffmpeg -i input_video.mp4 -an -c:v libx265 -crf 28 output_video.mp4
+// ffmpeg: video and image tool
+// -i input | -an remove audio | -c:v copy video | libx265 -crf 28 reduce size via encoding
+// ffmpeg -i dune_south.mp4 -vf "scale=80:45:flags=neighbor" frames/frame%04d.png
 
 
-fn main () {
+fn main () -> Result<(), io::Error> {
+    let mut entries = fs::read_dir("./frames")?
+        .map(|res| res.map(|e| e.path()))
+        .collect::<Result<Vec<_>, io::Error>>()?;
+
+    // The order in which `read_dir` returns entries is not guaranteed. If reproducible
+    // ordering is required the entries should be explicitly sorted.
+
+    entries.sort();
+
     let conf = Config {
     // Set dimensions.
-    width: Some(80),
-    height: Some(25),
+    width: Some(100),
+    height: Some(35),
     ..Default::default()
     };
 
-    // Display `img.jpg` with dimensions 80×25 in terminal cells.
-    // The image resolution will be 80×50 because each cell contains two pixels.
-    print_from_file("dune.jpeg", &conf).expect("Image printing failed.");
-    print_from_file("emperor.jpg", &conf).expect("Image printing failed.");
+    let frame_base = "frames";
+    for path in entries {
+        let frame = path.file_name().unwrap().to_str().unwrap();
+        let full_path = format!("{}/{}", frame_base, frame);
+
+        // Display `img.jpg` with dimensions 80×25 in terminal cells.
+        // The image resolution will be 80×50 because each cell contains two pixels.
+        print_from_file(full_path, &conf).expect("Image printing failed.");
+        thread::sleep(Duration::from_millis(40));
+    }
+    Ok(())
 }
