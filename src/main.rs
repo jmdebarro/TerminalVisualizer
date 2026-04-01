@@ -1,5 +1,8 @@
 use viuer::{print_from_file, Config};
-use std::{thread, time::Duration};
+
+// Take screenshots from video and downplay frames into pixel art
+// Continuously show these low res images
+
 
 fn main () {
     let conf = Config {
@@ -12,6 +15,5 @@ fn main () {
     // Display `img.jpg` with dimensions 80×25 in terminal cells.
     // The image resolution will be 80×50 because each cell contains two pixels.
     print_from_file("dune.jpeg", &conf).expect("Image printing failed.");
-    thread::sleep(Duration::from_secs(4));
     print_from_file("emperor.jpg", &conf).expect("Image printing failed.");
 }
