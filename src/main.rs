@@ -19,13 +19,18 @@ use lib::download_video;
 #[tokio::main]
 async fn main () -> Result<(), Box<dyn Error>> {
 
+    // Take cmd line arg
     let args: Vec<String> = env::args().collect();
-
     println!("{:?}", args);
     let url: &String = &args[1];
 
+    // Download url provided via cmd line arg
     let video: PathBuf = download_video(url).await?;
-    
+
+    // Edit webm into low res with pixelated effect and many frames
+
+
+    // Iterate through frames to display video
     let mut entries = fs::read_dir("./frames")?
         .map(|res| res.map(|e| e.path()))
         .collect::<Result<Vec<_>, io::Error>>()?;
