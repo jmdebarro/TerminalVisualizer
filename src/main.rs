@@ -1,17 +1,31 @@
 use viuer::{print_from_file, Config};
+use std::error::Error;
+use std::path::PathBuf;
 use std::{thread, time::Duration};
-use std::{fs, io};
+use std::{fs, io, env};
+
+mod lib;
+use lib::download_video;
 
 // Take screenshots from video and downplay frames into pixel art
 // Continuously show these low res images
 // Remove audio via this
 // ffmpeg -i input_video.mp4 -an -c:v libx265 -crf 28 output_video.mp4
-// ffmpeg: video and image tool
+// ffmpeg: video and image tool 
 // -i input | -an remove audio | -c:v copy video | libx265 -crf 28 reduce size via encoding
 // ffmpeg -i dune_south.mp4 -vf "scale=80:45:flags=neighbor" frames/frame%04d.png
 
 
-fn main () -> Result<(), io::Error> {
+#[tokio::main]
+async fn main () -> Result<(), Box<dyn Error>> {
+
+    let args: Vec<String> = env::args().collect();
+
+    println!("{:?}", args);
+    let url: &String = &args[1];
+
+    let video: PathBuf = download_video(url).await?;
+    
     let mut entries = fs::read_dir("./frames")?
         .map(|res| res.map(|e| e.path()))
         .collect::<Result<Vec<_>, io::Error>>()?;

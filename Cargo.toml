@@ -6,3 +6,5 @@ edition = "2021"
 [dependencies]
 viuer = { version = "0.9", features = ["print-file"] }
 yt-dlp = "2.7.1"
+ffmpeg-next = "8.1.0"
+tokio = { version = "1", features = ["full"] }
